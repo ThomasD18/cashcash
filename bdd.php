@@ -1,22 +1,18 @@
 <?php
-// Informations de connexion à la base de données
-$serveur = "localhost"; // Adresse du serveur MySQL (peut également être une adresse IP)
-$utilisateur = "root"; // Nom d'utilisateur MySQL
-$motDePasse = "root"; // Mot de passe MySQL
-$nomBaseDeDonnees = "cashcash"; // Nom de la base de données MySQL
+// bdd.php
 
-// Connexion à la base de données
-$mysqli = new mysqli($serveur, $utilisateur, $motDePasse, $nomBaseDeDonnees);
+function connectToDatabase() {
+    $serveur = "localhost";
+    $utilisateur = "root";
+    $motDePasse = "root";
+    $nomBaseDeDonnees = "cashcash";
 
-// Vérifier la connexion
-if ($mysqli->connect_error) {
-    die("Échec de la connexion à la base de données : " . $mysqli->connect_error);
+    $conn = mysqli_connect($serveur, $utilisateur, $motDePasse, $nomBaseDeDonnees);
+
+    if (!$conn) {
+        die("Échec de la connexion à la base de données : " . mysqli_connect_error());
+    }
+
+    return $conn;
 }
-
-echo "Connexion réussie à la base de données.";
-
-// Vous pouvez maintenant exécuter des requêtes SQL ou effectuer d'autres opérations avec la base de données.
-
-// N'oubliez pas de fermer la connexion lorsque vous avez terminé avec la base de données
-$mysqli->close();
 ?>
