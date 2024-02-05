@@ -11,6 +11,7 @@ $modelData = $model->getData();
 
 $view = new View();
 $view->render($modelData);
+?>
 
 <!DOCTYPE html>
 <html lang="fr">
