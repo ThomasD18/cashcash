@@ -38,4 +38,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // N'oubliez pas de fermer la connexion lorsque vous avez terminé avec la base de données
 mysqli_close($conn);
-?>

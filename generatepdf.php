@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . "/vendor/autoload.php"); 
-include_once(__DIR__ . "\bdd.php");
+include_once(__DIR__ . "/bdd.php");
 
 session_start();
 
@@ -63,4 +63,4 @@ $dompdf->render();
 $dompdf->stream("listeinterventions.pdf");
 
 mysqli_close($conn);
-?>
+
