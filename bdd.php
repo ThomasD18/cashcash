@@ -1,5 +1,4 @@
 <?php
-// bdd.php
 
 function connectToDatabase() {
     $serveur = "localhost";
@@ -15,4 +14,4 @@ function connectToDatabase() {
 
     return $conn;
 }
-?>
+
