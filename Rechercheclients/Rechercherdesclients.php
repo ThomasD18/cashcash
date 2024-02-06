@@ -1,8 +1,7 @@
 <?php
 include_once("../bdd.php");
 session_start();
-include_once("../index.php"); 
-
+include_once("../index.php");
 
 $conn = connectToDatabase();
 
@@ -11,9 +10,10 @@ if (isset($_SESSION['success_message'])) {
     unset($_SESSION['success_message']);
 }
 
+$searchPerformed = false;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $searchByName = isset($_POST['searchByName']) ? mysqli_real_escape_string($conn, $_POST['searchByName']) : '';
-
     $searchById = isset($_POST['searchById']) ? mysqli_real_escape_string($conn, $_POST['searchById']) : '';
 
     $whereClause = '';
@@ -24,23 +24,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $whereClause .= ($whereClause != '' ? ' AND ' : '') . "id = '$searchById'";
     }
 
-    $query = "SELECT * FROM client";
     if ($whereClause != '') {
-        $query .= " WHERE $whereClause";
-    }
+        $searchPerformed = true;
 
-    $result = mysqli_query($conn, $query);
+        $searchQuery = "SELECT * FROM client WHERE $whereClause";
+        $result = mysqli_query($conn, $searchQuery);
+
+        if ($result !== false) {
+            $numRows = mysqli_num_rows($result);
+
+            if ($numRows > 0) {
+                echo "<h2>Résultats de la recherche :</h2>";
+                echo "<table border='1'>";
+                echo "<tr><th>ID</th><th>Nom</th><th>Raison Sociale</th><th>SIREN</th><th>APE</th><th>Adresse</th><th>Téléphone</th><th>Email</th><th>Action</th></tr>";
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr>";
+                    echo "<td>" . $row['id'] . "</td>";
+                    echo "<td>" . $row['Nom'] . "</td>";
+                    echo "<td>" . $row['raison_sociale'] . "</td>";
+                    echo "<td>" . $row['SIREN'] . "</td>";
+                    echo "<td>" . $row['APE'] . "</td>";
+                    echo "<td>" . $row['Adresse'] . "</td>";
+                    echo "<td>" . $row['Telephone'] . "</td>";
+                    echo "<td>" . $row['email'] . "</td>";
+                    echo "<td><a href='modifierclient.php?id=" . $row['id'] . "'>Modifier</a></td>";
+                    echo "</tr>";
+                }
+
+                echo "</table>";
+            } else {
+                echo "Aucun résultat trouvé.";
+            }
+        } else {
+            die("La requête a échoué : " . mysqli_error($conn));
+        }
+    }
+}
+
+// Affiche la liste complète si aucune recherche n'a été effectuée ou si la recherche n'a pas donné de résultats
+if (!$searchPerformed || ($searchPerformed && $numRows === 0)) {
+    $displayAllQuery = "SELECT * FROM client";
+    $result = mysqli_query($conn, $displayAllQuery);
 
     if ($result !== false) {
         $numRows = mysqli_num_rows($result);
 
         if ($numRows > 0) {
-            echo "<h2>Résultats de la recherche :</h2>";
+            echo "<h2>Liste des clients :</h2>";
             echo "<table border='1'>";
-            echo "<tr><th>Nom</th><th>Raison Sociale</th><th>SIREN</th><th>APE</th><th>Adresse</th><th>Téléphone</th><th>Email</th><th>Action</th></tr>";
+            echo "<tr><th>ID</th><th>Nom</th><th>Raison Sociale</th><th>SIREN</th><th>APE</th><th>Adresse</th><th>Téléphone</th><th>Email</th><th>Action</th></tr>";
 
             while ($row = mysqli_fetch_assoc($result)) {
                 echo "<tr>";
+                echo "<td>" . $row['id'] . "</td>";
                 echo "<td>" . $row['Nom'] . "</td>";
                 echo "<td>" . $row['raison_sociale'] . "</td>";
                 echo "<td>" . $row['SIREN'] . "</td>";
@@ -54,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             echo "</table>";
         } else {
-            echo "Aucun résultat trouvé.";
+            echo "Aucun client trouvé.";
         }
     } else {
         die("La requête a échoué : " . mysqli_error($conn));
@@ -69,7 +106,7 @@ mysqli_close($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css"> 
+    <link rel="stylesheet" href="../style.css"> 
     <title>Recherche Clients</title>
 </head>
 <body>
@@ -85,6 +122,12 @@ mysqli_close($conn);
 
         <button type="submit">Rechercher</button>
     </form>
+
+    <?php if ($searchPerformed) : ?>
+        <form method="GET" action="">
+            <button type="submit">Afficher Toute la Liste</button>
+        </form>
+    <?php endif; ?>
 
 </body>
 </html>
