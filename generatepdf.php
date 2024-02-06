@@ -1,51 +1,66 @@
 <?php
-require_once('chemin/vers/tcpdf/tcpdf.php');
+require_once(__DIR__ . "/vendor/autoload.php"); 
 include_once(__DIR__ . "\bdd.php");
 
 session_start();
 
+use Dompdf\Dompdf;
 $conn = connectToDatabase();
 
 $sql = "SELECT * FROM intervention";
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
-    die("Erreur lors de l'exécution de la requête : " . mysqli_error($conn));
+    die("Erreur lors de l'exécution de la requete " . mysqli_error($conn));
 }
 
-$pdf = new TCPDF();
+$dompdf = new Dompdf();
 
-$pdf->AddPage();
-
-$pdf->SetFont('helvetica', 'B', 12);
-
-while ($row = mysqli_fetch_assoc($result)) {
-    $zoneDeTexte = "ID: " . $row['Num_intervention'] . "\Commentaire: " . $row['Commentaire'] . "\n" . "\Technicien: " . $row['Id_Technicien'] . "\n" . "\Date: " . $row['Date_intervention'] . "\n";
-    $pdf->Cell(0, 10, $zoneDeTexte, 0, 1);
-}
-
-$nomFichier = 'exemple.pdf';
-
-$pdf->Output($nomFichier, 'D');
-
-mysqli_close($conn);
-?>
-
-<!DOCTYPE html>
+$pdfbase = '<!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Télécharger le PDF</title>
+    <title>Liste d\'interventions</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 8px; }
+    </style>
 </head>
-
 <body>
+    <h1>Liste d\'interventions</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Intervention</th>
+                <th>Commentaire</th>
+                <th>Technicien</th>
+                <th>Date Intervention</th>
+            </tr>
+        </thead>
+        <tbody>';
 
-    <a href="<?php echo $nomFichier; ?>" download="exemple.pdf">
-        <button>Télécharger le PDF</button>
-    </a>
+while ($row = mysqli_fetch_assoc($result)) {
+    $pdfbase .= '<tr>
+                <td>' . $row['Num_intervention'] . '</td>
+                <td>' . $row['Commentaire'] . '</td>
+                <td>' . $row['Id_Technicien'] . '</td>
+                <td>' . $row['Date_intervention'] . '</td>
+            </tr>';
+}
 
+$pdfbase .= '</tbody>
+    </table>
 </body>
+</html>';
 
-</html>
+$dompdf->loadHtml($pdfbase);
+
+$dompdf->render();
+
+$dompdf->stream("interventions.pdf");
+
+mysqli_close($conn);
+?>
