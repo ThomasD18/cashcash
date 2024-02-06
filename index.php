@@ -10,10 +10,9 @@
 
     <h1>Menu</h1>
 
-    <!-- Liens vers différentes pages -->
     <ul>
         <li><a href="Rechercherdesclients.php">Rechercher des clients</a></li>
-        <!-- Ajoutez d'autres liens selon vos besoins -->
+        <li><a href="generatepdf.php">Generer le pdf des interventions</a></li>
     </ul>
 
 </body>

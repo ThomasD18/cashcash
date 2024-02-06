@@ -21,7 +21,7 @@ $pdfbase = '<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste d\'interventions</title>
+    <title>Liste des interventions</title>
     <style>
         body { font-family: Arial, sans-serif; }
         h1 { text-align: center; }
@@ -30,7 +30,7 @@ $pdfbase = '<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <h1>Liste d\'interventions</h1>
+    <h1>Liste des interventions</h1>
     <table>
         <thead>
             <tr>
@@ -60,7 +60,7 @@ $dompdf->loadHtml($pdfbase);
 
 $dompdf->render();
 
-$dompdf->stream("interventions.pdf");
+$dompdf->stream("listeinterventions.pdf");
 
 mysqli_close($conn);
 ?>
